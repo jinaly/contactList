@@ -1,0 +1,11 @@
+.contactListRoot {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.searchTextfield {
+  width: 50%;
+}
