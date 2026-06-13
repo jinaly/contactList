@@ -46,7 +46,6 @@ const ContactList = () => {
     },
   });
 
-  const [value, setValue] = React.useState(query.data);
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const fuzzyMatch = (search: string, text: string) => {
@@ -67,25 +66,18 @@ const ContactList = () => {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const targetValue = e.target.value;
-
-    setSearchTerm(targetValue);
-
-    if (!query.data) return;
-
-    if (!targetValue.trim()) {
-      setValue(query.data);
-      return;
-    }
-
-    const filteredContacts = query.data.filter((contact) => {
-      const fullName = `${contact.first_name} ${contact.last_name}`;
-
-      return fuzzyMatch(targetValue, fullName);
-    });
-
-    setValue(filteredContacts);
+    setSearchTerm(e.target.value);
   };
+
+  const filteredContacts = React.useMemo(() => {
+    if (!query.data) return [];
+    if (!searchTerm.trim()) return query.data;
+
+    return query.data.filter((contact) => {
+      const fullName = `${contact.first_name} ${contact.last_name}`;
+      return fuzzyMatch(searchTerm, fullName);
+    });
+  }, [query.data, searchTerm]);
 
   const populateImageFisrtName = (name: string) => {
     const initials = name
@@ -116,9 +108,8 @@ const ContactList = () => {
           maxHeight: "400px",
         }}
       >
-        {value?.length > 0 ? (
-          value &&
-          value?.map((contact) => {
+        {filteredContacts && filteredContacts.length > 0 ? (
+          filteredContacts.map((contact) => {
             const fullName = `${contact?.first_name} ${contact?.last_name}`;
             return (
               <>
